@@ -28,6 +28,10 @@ compress_file() {
 }
 
 # Check args
+if [[ $# -eq 0 ]]; then
+  echo "⚠️ Please provide a file to compress."
+  exit 1
+
 if [[ $# -eq 1 ]]; then
   # Single file mode
   compress_file "$1"
