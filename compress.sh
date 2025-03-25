@@ -1,43 +1,61 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: compress <input_file.mov>"
-  exit 1
-fi
+# Function to compress a single file
+compress_file() {
+  input_file="$1"
 
-input_file="$1"
+  if [[ ! -f "$input_file" ]]; then
+    echo "❌ '$input_file' is not a file. Skipping."
+    return
+  fi
 
-if [[ ! -f "$input_file" ]]; then
-  echo "❌ Error: '$input_file' is not a valid file."
-  exit 1
-fi
+  input_dir=$(dirname "$input_file")
+  filename=$(basename -- "$input_file")
+  filename_no_ext="${filename%.*}"
+  output_dir="${input_dir}/compressed"
+  output_file="${output_dir}/${filename_no_ext}.mp4"
 
-if [[ "$input_file" != *.mov ]]; then
-  echo "⚠️ Warning: Input file does not have a .mov extension."
-fi
-
-input_dir=$(dirname "$input_file")
-output_dir="${input_dir}/compressed"
-
-if [[ ! -d "$output_dir" ]]; then
-  echo "📁 Creating output directory: $output_dir"
   mkdir -p "$output_dir"
-  if [[ $? -ne 0 ]]; then
-    echo "❌ Failed to create output directory."
+
+  echo "🎬 Compressing '$input_file' → '$output_file'"
+  ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k "$output_file" < /dev/null
+
+  if [[ $? -eq 0 ]]; then
+    echo "✅ Done: $output_file"
+  else
+    echo "❌ Failed: $input_file"
+  fi
+}
+
+# Check args
+if [[ $# -eq 1 ]]; then
+  # Single file mode
+  compress_file "$1"
+
+elif [[ "$1" == "--batch" ]]; then
+  search_dir="${2:-.}"         # Default to current directory if not provided
+  pattern="${3:-*.mov}"        # Default pattern to *.mov
+
+  echo "🔍 Searching in '$search_dir' for files matching '$pattern'..."
+  shopt -s nullglob
+  files=("$search_dir"/$pattern)
+
+  if [[ ${#files[@]} -eq 0 ]]; then
+    echo "⚠️ No files found."
     exit 1
   fi
-fi
 
-filename=$(basename -- "$input_file")
-filename_no_ext="${filename%.*}"
-output_file="${output_dir}/${filename_no_ext}.mp4"
-
-echo "🎬 Compressing '$input_file' to '$output_file'..."
-ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k "$output_file"
-
-if [[ $? -eq 0 ]]; then
-  echo "✅ Compression complete: $output_file"
+  for file in "${files[@]}"; do
+    compress_file "$file"
+  done
 else
-  echo "❌ Compression failed."
+  echo "Usage:"
+  echo "  compress <file.mov>               Compress a single file"
+  echo "  compress --batch [dir] [pattern]  Compress all .mov files or matching pattern in a directory"
+  echo
+  echo "Examples:"
+  echo "  compress video.mov"
+  echo "  compress --batch ./recordings"
+  echo "  compress --batch ./recordings screen*.mov"
   exit 1
 fi
