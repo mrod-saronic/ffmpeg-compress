@@ -1,17 +1,19 @@
 # FFmpeg Video Compressor
 
-A simple shell script to compress `.mov` videos using FFmpeg and save the output to a specified folder.
+A simple shell script to compress `.mov` videos using FFmpeg and save the output file as mp4.
 
 ## Requirements
 
-- [FFmpeg](https://ffmpeg.org/) must be installed and in your system's PATH.
+In you MAC, open the CLI and type the following command:
+
+    brew install ffmpeg  
 
 ## Install
 
-Run the `./install.sh` command to make the script executable and also add it to your PATH automatically.
+Run the `./install.sh` command to make the compress script executable and also add it to your PATH automatically.
 
 ## Usage
 
 ```bash
-compress.sh path/to/input.mov /path/to/output/directory/
+compress path/to/input.mov
 ```
