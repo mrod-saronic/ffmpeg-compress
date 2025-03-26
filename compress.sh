@@ -31,11 +31,10 @@ compress_file() {
 if [[ $# -eq 0 ]]; then
   echo "⚠️ Please provide a file to compress."
   exit 1
+fi
 
 if [[ $# -eq 1 ]]; then
-  # Single file mode
   compress_file "$1"
-
 elif [[ "$1" == "--batch" ]]; then
   search_dir="${2:-.}"         # Default to current directory if not provided
   pattern="${3:-*.mov}"        # Default pattern to *.mov
