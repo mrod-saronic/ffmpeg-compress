@@ -33,11 +33,14 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-if [[ $# -eq 1 ]]; then
-  compress_file "$1"
-elif [[ "$1" == "--batch" ]]; then
+if [[ "$1" == "--batch" ]]; then
   search_dir="${2:-.}"         # Default to current directory if not provided
   pattern="${3:-*.mov}"        # Default pattern to *.mov
+
+  if [[ ! -d "$search_dir" ]]; then
+  echo "❌ The directory '$search_dir' does not exist or is not accessible."
+  exit 1
+  fi
 
   echo "🔍 Searching in '$search_dir' for files matching '$pattern'..."
   shopt -s nullglob
@@ -51,7 +54,7 @@ elif [[ "$1" == "--batch" ]]; then
   for file in "${files[@]}"; do
     compress_file "$file"
   done
-else
+elif [[ "$1" == "--help" ]]; then
   echo "Usage:"
   echo "  compress <file.mov>               Compress a single file"
   echo "  compress --batch [dir] [pattern]  Compress all .mov files or matching pattern in a directory"
@@ -60,5 +63,10 @@ else
   echo "  compress video.mov"
   echo "  compress --batch ./recordings"
   echo "  compress --batch ./recordings screen*.mov"
+  exit 1
+elif [[ $# -eq 1 ]]; then
+  compress_file "$1"
+else
+  echo "⚠️ Invalid arguments. Run 'compress --help' for usage."
   exit 1
 fi

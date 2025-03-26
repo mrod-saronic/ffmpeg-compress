@@ -29,4 +29,4 @@ else
   echo "✅ $INSTALL_DIR is already in your PATH."
 fi
 
-echo "🎉 Install complete. You can now run: $SCRIPT_NAME input.mov"
+echo "🎉 Install complete!"
