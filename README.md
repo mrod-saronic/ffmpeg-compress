@@ -12,8 +12,11 @@ In you MAC, open the CLI and type the following command:
 
 Run the `./install.sh` command to make the compress script executable and also add it to your PATH automatically.
 
+You can now run the script from any directory in your CLI.
+
 ## Usage
 
+Run following command to learn how to run the script:
 ```bash
-compress path/to/input.mov
+compress --help
 ```

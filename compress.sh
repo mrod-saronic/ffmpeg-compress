@@ -30,6 +30,7 @@ compress_file() {
 # Check args
 if [[ $# -eq 0 ]]; then
   echo "⚠️ Please provide a file to compress."
+  echo "Run 'compress --help' for usage."
   exit 1
 fi
 
@@ -56,13 +57,14 @@ if [[ "$1" == "--batch" ]]; then
   done
 elif [[ "$1" == "--help" ]]; then
   echo "Usage:"
-  echo "  compress <file.mov>               Compress a single file"
-  echo "  compress --batch [dir] [pattern]  Compress all .mov files or matching pattern in a directory"
+  echo "  compress <file.mov>                  Compress a single file"
+  echo "  compress --batch [dir]               Compress all .mov files in a directory"
+  echo "  compress --batch [dir] '[pattern]'   Compress all .mov files or matching pattern in a directory"
   echo
   echo "Examples:"
   echo "  compress video.mov"
   echo "  compress --batch ./recordings"
-  echo "  compress --batch ./recordings screen*.mov"
+  echo "  compress --batch ./recordings 'screen*.mov'"
   exit 1
 elif [[ $# -eq 1 ]]; then
   compress_file "$1"
