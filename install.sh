@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if ! command -v ffmpeg &> /dev/null; then
+  echo "📦 Installing ffmpeg..."
+  brew install ffmpeg
+else
+  echo "✅ ffmpeg is already installed."
+fi
+
 INSTALL_DIR="$HOME/.local/bin"
 SCRIPT_NAME="compress"
 
