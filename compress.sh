@@ -17,16 +17,16 @@ compress_file() {
 
   mkdir -p "$output_dir"
 
-  echo "🎬 Compressing '$input_file' → '$output_file'"
-
   # Get the duration of the input file in seconds
   duration=$(ffprobe -i "$input_file" -show_entries format=duration -v quiet -of csv="p=0" | awk '{print int($1)}')
+  echo "🕒 Duration: $duration seconds"
 
   if [[ -z "$duration" || "$duration" -eq 0 ]]; then
     echo "❌ Unable to determine duration for '$input_file'. Skipping."
     return
   fi
 
+  echo "🎬 Compressing '$input_file' → '$output_file'"
   ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -progress pipe:1 -nostats "$output_file" 2>&1 | \
   awk -v duration="$duration" '
     BEGIN { printf "⏳ Progress: [                    ] 0%%\r"; fflush(stdout); }
