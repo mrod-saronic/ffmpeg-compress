@@ -19,7 +19,8 @@ compress_file() {
 
   # Get the duration of the input file in seconds
   duration=$(ffprobe -i "$input_file" -show_entries format=duration -v quiet -of csv="p=0" | awk '{print int($1)}')
-  echo "🕒 Duration: $duration seconds"
+  duration_minutes=(awk "BEGIN {printf \"%.2f\", $duration / 60}") 
+  echo "🕒 Duration: $duration_minutes minutes"
 
   if [[ -z "$duration" || "$duration" -eq 0 ]]; then
     echo "❌ Unable to determine duration for '$input_file'. Skipping."
@@ -27,20 +28,8 @@ compress_file() {
   fi
 
   echo "🎬 Compressing '$input_file' → '$output_file'"
-  ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -progress pipe:1 -nostats "$output_file" 2>&1 | \
-  awk -v duration="$duration" '
-    BEGIN { printf "⏳ Progress: [                    ] 0%%\r"; fflush(stdout); }
-    /out_time_ms/ {
-      split($0, a, "=");
-      time_ms = a[2];
-      time_sec = int(time_ms / 1000000);
-      percent = int((time_sec / duration) * 100);
-      bar = int(percent / 5);
-      printf "⏳ Progress: [%-20s] %d%%\r", substr("####################", 1, bar), percent;
-      fflush(stdout);
-    }
-    END { print ""; }
-  '
+  ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -f mp4 -y pipe:1 2>/dev/null | \
+  pv -s "$duration" > "$output_file"
 
   if [[ $? -eq 0 ]]; then
     echo "✅ Done: $output_file"
