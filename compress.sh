@@ -19,7 +19,7 @@ compress_file() {
 
   # Get the duration of the input file in seconds
   duration=$(ffprobe -i "$input_file" -show_entries format=duration -v quiet -of csv="p=0" | awk '{print int($1)}')
-  duration_minutes=(awk "BEGIN {printf \"%.2f\", $duration / 60}") 
+  duration_minutes=$(awk "BEGIN {printf \"%.2f\", $duration / 60}")
   echo "🕒 Duration: $duration_minutes minutes"
 
   if [[ -z "$duration" || "$duration" -eq 0 ]]; then
