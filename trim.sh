@@ -38,7 +38,7 @@ trim_video() {
   mkdir -p "$output_dir"
 
   echo "✂️ Trimming '$input_file' from $start_time to $end_time → '$output_file'"
-  ffmpeg -i "$input_file" -ss "$start_time" -to "$end_time" -c copy "$output_file"
+ffmpeg -i "$input_file" -ss "$start_time" -to "$end_time" -c copy "$output_file" > /dev/null 2>&1
 
   if [[ $? -eq 0 ]]; then
     echo "✅ Trimmed video saved as '$output_file'"

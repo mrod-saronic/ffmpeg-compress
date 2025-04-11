@@ -1,8 +1,28 @@
 #!/bin/bash
 
+# Detect the operating system
+OS=$(uname -s)
+
+# Install ffmpeg
 if ! command -v ffmpeg &> /dev/null; then
   echo "📦 Installing ffmpeg..."
-  brew install ffmpeg
+  if [[ "$OS" == "Darwin" ]]; then
+    # macOS
+    brew install ffmpeg
+  elif [[ "$OS" == "Linux" ]]; then
+    # Linux
+    if command -v apt &> /dev/null; then
+      sudo apt update && sudo apt install -y ffmpeg
+    elif command -v yum &> /dev/null; then
+      sudo yum install -y epel-release && sudo yum install -y ffmpeg
+    else
+      echo "❌ Unsupported package manager. Please install ffmpeg manually."
+      exit 1
+    fi
+  else
+    echo "❌ Unsupported operating system. Please install ffmpeg manually."
+    exit 1
+  fi
 else
   echo "✅ ffmpeg is already installed."
 fi
@@ -13,9 +33,11 @@ TRIM_SCRIPT_NAME="trim"
 
 mkdir -p "$INSTALL_DIR"
 
+# Copy and make compress.sh executable
 cp compress.sh "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
 chmod +x "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
 
+# Copy and make trim.sh executable
 cp trim.sh "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
 chmod +x "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
 
@@ -24,7 +46,11 @@ SHELL_RC=""
 if [[ $SHELL == *zsh* ]]; then
   SHELL_RC="$HOME/.zshrc"
 elif [[ $SHELL == *bash* ]]; then
-  SHELL_RC="$HOME/.bashrc"
+  if [[ -f "$HOME/.bashrc" ]]; then
+    SHELL_RC="$HOME/.bashrc"
+  elif [[ -f "$HOME/.bash_profile" ]]; then
+    SHELL_RC="$HOME/.bash_profile"
+  fi
 fi
 
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
