@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Function to validate timestamp format (HH:MM:SS or MM:SS)
+validate_timestamp() {
+  local timestamp="$1"
+  if [[ ! "$timestamp" =~ ^([0-9]{2}:)?[0-9]{2}:[0-9]{2}$ ]]; then
+    echo "❌ Invalid timestamp format: '$timestamp'. Expected format is HH:MM:SS or MM:SS."
+    return 1
+  fi
+  return 0
+}
+
 # Function to trim a video file
 trim_video() {
   input_file="$1"
@@ -9,6 +19,13 @@ trim_video() {
   if [[ ! -f "$input_file" ]]; then
     echo "❌ '$input_file' is not a file. Skipping."
     return
+  fi
+
+  if ! validate_timestamp "$start_time"; then
+    exit 1
+  fi
+  if ! validate_timestamp "$end_time"; then
+    exit 1
   fi
 
   input_dir=$(dirname "$input_file")
@@ -31,11 +48,23 @@ trim_video() {
 }
 
 # Check arguments
-if [[ $# -lt 3 ]]; then
-  echo "⚠️ Usage: trim <file> <start_time> <end_time>"
-  echo "Example: trim video.mp4 00:01:00 00:02:00"
+if [[ $# -eq 0]]; then
+  echo "⚠️ Please provide a file to compress."
+  echo "Run 'compress --help' for usage."
   exit 1
 fi
 
-# Call the trim function
-trim_video "$1" "$2" "$3"
+if [[ "$1" == "--help"]]; then
+  echo "Usage:"
+  echo "  trim <file> <start_time> <end_time>  Trim a video file between the specified timestamps"
+  echo "  trim --help                          Show this help message"
+  echo
+  echo "Examples:"
+  echo "  trim video.mp4 00:01:00 00:02:00     Trim video.mp4 from 1:00 to 2:00"
+  exit 1
+elif [[ $# -eq 3]]; then
+  trim_video "$1" "$2" "$3"
+elif [[ $# -lt 3 ]]; then
+  echo "⚠️ Invalid arguments. Run 'trim --help' for usage."
+  exit 1
+fi
