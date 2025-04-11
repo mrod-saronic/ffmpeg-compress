@@ -8,12 +8,16 @@ else
 fi
 
 INSTALL_DIR="$HOME/.local/bin"
-SCRIPT_NAME="compress"
+COMPRESS_SCRIPT_NAME="compress"
+TRIM_SCRIPT_NAME="trim"
 
 mkdir -p "$INSTALL_DIR"
 
-cp compress.sh "$INSTALL_DIR/$SCRIPT_NAME"
-chmod +x "$INSTALL_DIR/$SCRIPT_NAME"
+cp compress.sh "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
+chmod +x "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
+
+cp trim.sh "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
+chmod +x "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
 
 # Detect shell config file
 SHELL_RC=""
@@ -36,4 +40,4 @@ else
   echo "✅ $INSTALL_DIR is already in your PATH."
 fi
 
-echo "🎉 Install complete!"
+echo "🎉 Install complete! Both 'compress' and 'trim' commands are now available."
