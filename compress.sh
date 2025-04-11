@@ -31,10 +31,9 @@ compress_file() {
   # Create a temporary file for progress tracking
   progress_file=$(mktemp)
 
-  # Start ffmpeg in the background with progress output
   echo "🎬 Compressing '$input_file' → '$output_file'"
   ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -f mp4 -y "$output_file" \
-    -progress "$progress_file" -nostats &
+    -progress "$progress_file" -loglevel error &
 
   ffmpeg_pid=$!
 
