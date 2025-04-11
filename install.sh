@@ -7,13 +7,6 @@ else
   echo "✅ ffmpeg is already installed."
 fi
 
-if ! command -v pv &> /dev/null; then
-  echo "📦 Installing pv..."
-  brew install pv
-else
-  echo "✅ pv is already installed."
-fi
-
 INSTALL_DIR="$HOME/.local/bin"
 SCRIPT_NAME="compress"
 

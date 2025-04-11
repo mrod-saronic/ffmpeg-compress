@@ -28,17 +28,36 @@ compress_file() {
   duration_minutes=$(awk "BEGIN {printf \"%.2f\", $duration / 60}")
   echo "🕒 Duration: $duration_minutes minutes"
 
+  # Create a temporary file for progress tracking
+  progress_file=$(mktemp)
+
+  # Start ffmpeg in the background with progress output
   echo "🎬 Compressing '$input_file' → '$output_file'"
+  ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -f mp4 -y "$output_file" \
+    -progress "$progress_file" -nostats &
 
-  # Use ffmpeg with pv for progress tracking
-  ffmpeg -i "$input_file" -vcodec libx264 -crf 23 -preset fast -acodec aac -b:a 128k -f mp4 -y "$output_file" 2>&1 | \
-  grep --line-buffered "frame=" | \
-  pv -l -s "$duration" > /dev/null
+  ffmpeg_pid=$!
 
+  # Display progress bar
+  while kill -0 "$ffmpeg_pid" 2>/dev/null; do
+    sleep 1
+    current_time=$(grep "out_time_ms" "$progress_file" | tail -n 1 | cut -d= -f2)
+    if [[ -n "$current_time" ]]; then
+      current_time_sec=$((current_time / 1000000))
+      percent=$((current_time_sec * 100 / duration))
+      bar=$(printf "%-${percent}s" "#" | tr ' ' '#')
+      printf "\r⏳ Progress: [%-50s] %d%%" "$bar" "$percent"
+    fi
+  done
+
+  # Clean up
+  rm -f "$progress_file"
+
+  wait "$ffmpeg_pid"
   if [[ $? -eq 0 ]]; then
-    echo "✅ Done: $output_file"
+    echo -e "\n✅ Done: $output_file"
   else
-    echo "❌ Failed: $input_file"
+    echo -e "\n❌ Failed: $input_file"
   fi
 }
 
