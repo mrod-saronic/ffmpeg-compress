@@ -54,7 +54,7 @@ if [[ $# -eq 0 ]]; then
   exit 1
 fi
 
-if [[ "$1" == "--help"]]; then
+if [[ "$1" == "--help" ]]; then
   echo "Usage:"
   echo "  trim <file> <start_time> <end_time>  Trim a video file between the specified timestamps"
   echo "  trim --help                          Show this help message"
@@ -62,7 +62,7 @@ if [[ "$1" == "--help"]]; then
   echo "Examples:"
   echo "  trim video.mp4 00:01:00 00:02:00     Trim video.mp4 from 1:00 to 2:00"
   exit 1
-elif [[ $# -eq 3]]; then
+elif [[ $# -eq 3 ]]; then
   trim_video "$1" "$2" "$3"
 elif [[ $# -lt 3 ]]; then
   echo "⚠️ Invalid arguments. Run 'trim --help' for usage."
