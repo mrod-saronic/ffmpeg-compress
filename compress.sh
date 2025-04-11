@@ -44,8 +44,12 @@ compress_file() {
     if [[ -n "$current_time" ]]; then
       current_time_sec=$((current_time / 1000000))
       percent=$((current_time_sec * 100 / duration))
-      bar=$(printf "%-${percent}s" "#" | tr ' ' '#')
-      printf "\r⏳ Progress: [%-50s] %d%%" "$bar" "$percent"
+      if [[ $percent -gt 100 ]]; then
+        percent=100
+      fi
+      bar_length=$percent # Scale to fit 100 characters
+      bar=$(printf "%-${bar_length}s" "#" | tr ' ' '#')
+      printf "\r⏳ Progress: [%-100s] %d%%" "$bar" "$percent"
     fi
   done
 
