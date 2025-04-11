@@ -18,7 +18,7 @@ compress_file() {
   mkdir -p "$output_dir"
 
   # Get the duration of the input file in seconds
-  duration=$(ffprobe -i "$input_file" -show_entries format=duration -v quiet -of csv="p=0" | awk '{print int($1)}')
+  duration=$(ffprobe -i "$input_file" -show_entries format=duration -v quiet -of csv="p=0" | awk '{printf "%.0f", $1}')
   if [[ -z "$duration" || "$duration" -eq 0 ]]; then
     echo "❌ Unable to determine duration for '$input_file'. Skipping."
     return
@@ -26,7 +26,7 @@ compress_file() {
 
   # Convert duration to minutes for display
   duration_minutes=$(awk "BEGIN {printf \"%.2f\", $duration / 60}")
-  echo "🕒 Duration: $duration_minutes minutes"
+  echo "🕒 Video Duration: $duration_minutes minutes"
 
   # Create a temporary file for progress tracking
   progress_file=$(mktemp)

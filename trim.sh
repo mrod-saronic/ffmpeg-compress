@@ -48,7 +48,7 @@ trim_video() {
 }
 
 # Check arguments
-if [[ $# -eq 0]]; then
+if [[ $# -eq 0 ]]; then
   echo "⚠️ Please provide a file to compress."
   echo "Run 'compress --help' for usage."
   exit 1
