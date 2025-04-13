@@ -19,6 +19,14 @@ if ! command -v ffmpeg &> /dev/null; then
       echo "❌ Unsupported package manager. Please install ffmpeg manually."
       exit 1
     fi
+  elif [[ "$OS" == "MINGW"* || "$OS" == "CYGWIN"* || "$OS" == "MSYS"* ]]; then
+    # Windows
+    echo "⚠️ Windows detected. Please follow these steps to install ffmpeg:"
+    echo "1. Download the FFmpeg zip file from https://ffmpeg.org/download.html."
+    echo "2. Extract the zip file to a directory (e.g., C:\\ffmpeg)."
+    echo "3. Add the bin directory (e.g., C:\\ffmpeg\\bin) to your system's PATH."
+    echo "4. Restart your terminal or command prompt."
+    exit 0
   else
     echo "❌ Unsupported operating system. Please install ffmpeg manually."
     exit 1
