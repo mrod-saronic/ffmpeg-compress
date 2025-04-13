@@ -51,7 +51,7 @@ compress_file() {
       bar_length=$percent # Scale to fit 100 characters
       elapsed=$(( $(date +%s) - start_time ))
       remaining=$(( (elapsed * 100 / percent) - elapsed ))
-      bar=$(printf "%-${bar_length}s" "#" | cut -c1-50 | tr ' ' '#')
+      bar=$(printf "%-${bar_length}s" "#" | tr ' ' '#')
       printf "\r⏳ Progress: [%-100s] %d%% | Elapsed: %ds | Remaining: %ds" "$bar" "$percent" "$elapsed" "$remaining"
     fi
   done
