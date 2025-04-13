@@ -37,6 +37,7 @@ compress_file() {
 
   ffmpeg_pid=$!
 
+  # Display progress bar
   start_time=$(date +%s)
   while kill -0 "$ffmpeg_pid" 2>/dev/null; do
     sleep 1
@@ -44,10 +45,14 @@ compress_file() {
     if [[ -n "$current_time" ]]; then
       current_time_sec=$((current_time / 1000000))
       percent=$((current_time_sec * 100 / duration))
+      if [[ $percent -gt 100 ]]; then
+        percent=100
+      fi
+      bar_length=$percent # Scale to fit 100 characters
       elapsed=$(( $(date +%s) - start_time ))
       remaining=$(( (elapsed * 100 / percent) - elapsed ))
-      bar=$(printf "%-${percent}s" "#" | cut -c1-50 | tr ' ' '#')
-      printf "\r⏳ Progress: [%-50s] %d%% | Elapsed: %ds | Remaining: %ds" "$bar" "$percent" "$elapsed" "$remaining"
+      bar=$(printf "%-${bar_length}s" "#" | cut -c1-50 | tr ' ' '#')
+      printf "\r⏳ Progress: [%-100s] %d%% | Elapsed: %ds | Remaining: %ds" "$bar" "$percent" "$elapsed" "$remaining"
     fi
   done
 
