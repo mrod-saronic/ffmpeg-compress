@@ -101,12 +101,8 @@ if [[ "$1" == "--batch" ]]; then
   fi
 
   for file in "${files[@]}"; do
-    compress_file "$file" &
-    if [[ $(jobs -r -p | wc -l) -ge 4 ]]; then
-      wait -n
-    fi
+    compress_file "$file"
   done
-  wait # Wait for all background jobs to finish
 
 elif [[ "$1" == "--help" ]]; then
   echo "Usage:"
