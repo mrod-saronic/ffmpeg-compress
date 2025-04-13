@@ -52,8 +52,7 @@ compress_file() {
       bar=$(printf "%-${bar_length}s" "#" | tr ' ' '#')
       elapsed=$(( $(date +%s) - start_time ))
       remaining=$(( (elapsed * 100 / percent) - elapsed ))
-      printf "\r⏳ Progress: [%-100s] %d%% | Remaining: %d sec" "$bar" "$percent" "$remaining"
-      echo -ne "\r"
+      printf "\r⏳ Progress: [%-100s] %d%% | Remaining: %d sec\033[K" "$bar" "$percent" "$remaining"
     fi
   done
 
