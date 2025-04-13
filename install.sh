@@ -41,11 +41,8 @@ TRIM_SCRIPT_NAME="trim"
 
 mkdir -p "$INSTALL_DIR"
 
-# Copy and make compress.sh executable
 cp compress.sh "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
 chmod +x "$INSTALL_DIR/$COMPRESS_SCRIPT_NAME"
-
-# Copy and make trim.sh executable
 cp trim.sh "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
 chmod +x "$INSTALL_DIR/$TRIM_SCRIPT_NAME"
 
@@ -61,11 +58,16 @@ elif [[ $SHELL == *bash* ]]; then
   fi
 fi
 
+# Add INSTALL_DIR to PATH if not already present
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
   if [[ -n "$SHELL_RC" ]]; then
+    touch "$SHELL_RC"
+    
     echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$SHELL_RC"
     echo "✅ Added $INSTALL_DIR to your PATH in $SHELL_RC"
-    echo "🔁 Please run: source $SHELL_RC"
+    
+    source "$SHELL_RC"
+    echo "🔁 Sourced $SHELL_RC. PATH updated for the current session."
   else
     echo "⚠️ Could not detect your shell config. Please add this to your shell config manually:"
     echo "export PATH=\"\$PATH:$INSTALL_DIR\""

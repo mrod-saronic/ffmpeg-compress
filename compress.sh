@@ -37,19 +37,17 @@ compress_file() {
 
   ffmpeg_pid=$!
 
-  # Display progress bar
+  start_time=$(date +%s)
   while kill -0 "$ffmpeg_pid" 2>/dev/null; do
     sleep 1
     current_time=$(grep "out_time_ms" "$progress_file" | tail -n 1 | cut -d= -f2)
     if [[ -n "$current_time" ]]; then
       current_time_sec=$((current_time / 1000000))
       percent=$((current_time_sec * 100 / duration))
-      if [[ $percent -gt 100 ]]; then
-        percent=100
-      fi
-      bar_length=$percent # Scale to fit 100 characters
-      bar=$(printf "%-${bar_length}s" "#" | tr ' ' '#')
-      printf "\r⏳ Progress: [%-100s] %d%%" "$bar" "$percent"
+      elapsed=$(( $(date +%s) - start_time ))
+      remaining=$(( (elapsed * 100 / percent) - elapsed ))
+      bar=$(printf "%-${percent}s" "#" | cut -c1-50 | tr ' ' '#')
+      printf "\r⏳ Progress: [%-50s] %d%% | Elapsed: %ds | Remaining: %ds" "$bar" "$percent" "$elapsed" "$remaining"
     fi
   done
 
@@ -90,8 +88,13 @@ if [[ "$1" == "--batch" ]]; then
   fi
 
   for file in "${files[@]}"; do
-    compress_file "$file"
+    compress_file "$file" &
+    if [[ $(jobs -r -p | wc -l) -ge 4 ]]; then
+      wait -n
+    fi
   done
+  wait # Wait for all background jobs to finish
+
 elif [[ "$1" == "--help" ]]; then
   echo "Usage:"
   echo "  compress <file.mov>                  Compress a single file"
@@ -103,8 +106,10 @@ elif [[ "$1" == "--help" ]]; then
   echo "  compress --batch ./recordings"
   echo "  compress --batch ./recordings 'screen*.mov'"
   exit 1
+
 elif [[ $# -eq 1 ]]; then
   compress_file "$1"
+
 else
   echo "⚠️ Invalid arguments. Run 'compress --help' for usage."
   exit 1
