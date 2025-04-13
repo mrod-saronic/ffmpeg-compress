@@ -44,14 +44,22 @@ compress_file() {
     current_time=$(grep "out_time_ms" "$progress_file" | tail -n 1 | cut -d= -f2)
     if [[ -n "$current_time" ]]; then
       current_time_sec=$((current_time / 1000000))
-      percent=$((current_time_sec * 100 / duration))
-      if [[ $percent -gt 100 ]]; then
-        percent=100
+      if [[ $duration -gt 0 ]]; then
+        percent=$((current_time_sec * 100 / duration))
+        if [[ $percent -gt 100 ]]; then
+          percent=100
+        fi
+      else
+        percent=0
       fi
       bar_length=$percent # Scale to fit 100 characters
       bar=$(printf "%-${bar_length}s" "#" | tr ' ' '#')
       elapsed=$(( $(date +%s) - start_time ))
-      remaining=$(( (elapsed * 100 / percent) - elapsed ))
+      if [[ $percent -gt 0 ]]; then
+        remaining=$(( (elapsed * 100 / percent) - elapsed ))
+      else
+        remaining=0
+      fi
       printf "\r⏳ Progress: [%-100s] %d%% | Remaining: %d sec\033[K" "$bar" "$percent" "$remaining"
     fi
   done
@@ -61,9 +69,9 @@ compress_file() {
 
   wait "$ffmpeg_pid"
   if [[ $? -eq 0 ]]; then
-    echo -e "\n✅ Done: $output_file"
+    echo -e "\n✅ Done! Check out file -> $output_file"
   else
-    echo -e "\n❌ Failed: $input_file"
+    echo -e "\n❌ Failed to compress $input_file"
   fi
 }
 
